@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Process } from "./operating-system";
+import { Process } from "./os";
 
 export type LayoutType = { [key: number]: { x: number; y: number } };
 

@@ -7,10 +7,14 @@ import {
   ChevronRight,
   ChevronFirst,
   ChevronLast,
+  Home,
+  Moon,
+  Sun,
 } from "lucide-react";
 
-import { Process, LoverProcess, HaterProcess } from "./operating-system";
+import { Process, LoverProcess, HaterProcess } from "./os";
 import { EventLog, SimulationType, TreeNode, LayoutType } from "./components";
+import { useTheme } from "@/contexts/theme-context";
 
 function cloneProcessMap(map: Map<number, Process>): Map<number, Process> {
   const newMap = new Map<number, Process>();
@@ -141,6 +145,8 @@ function calculateTreeLayout(processes: Map<number, Process>) {
     });
   });
 
+  // console.log(layout);
+
   return layout;
 }
 
@@ -158,6 +164,8 @@ export default function Simulation({
   const [simulation, setSimulation] = useState<SimulationType | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  const { theme, toggleTheme } = useTheme();
 
   /*
   // error needs to be studied
@@ -213,12 +221,22 @@ export default function Simulation({
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2 font-serif relative">
+            {/* nav */}
             <Link
               href={"/"}
-              className="absolute left-0 text-lg font-serif hover:border hover:border-lime-300 dark:hover:border-lime-700"
+              className="absolute left-0 text-lg font-serif hover:border hover:border-lime-300 dark:hover:border-lime-700 cursor-pointer"
+              aria-label="go to Homepage"
             >
-              Home
+              <Home size={20} />
             </Link>
+            {/* dark mode */}
+            <button
+              aria-label="dark mode button"
+              onClick={toggleTheme}
+              className="absolute right-0 text-lg font-serif hover:border hover:border-lime-300 dark:hover:border-lime-700 cursor-pointer"
+            >
+              {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
             Lover Hater Simulation
           </h1>
         </div>
