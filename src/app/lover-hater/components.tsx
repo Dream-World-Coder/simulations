@@ -17,37 +17,27 @@ export function TreeNode({
       <circle
         cx={layout[proc.pid]?.x || 0}
         cy={layout[proc.pid]?.y || 0}
-        r="20"
+        r="10"
         fill={proc.type === "lover" ? "#22c55e" : "#f97316"}
         className="transition-all duration-500"
       />
-      {proc.type === "lover" ? (
-        <text
-          x={layout[proc.pid]?.x || 0}
-          y={(layout[proc.pid]?.y || 0) + 5}
-          textAnchor="middle"
-          fill="black"
-          fontSize="20"
-        >
-          {/*❤*/}
-        </text>
-      ) : (
-        <text
-          x={layout[proc.pid]?.x || 0}
-          y={(layout[proc.pid]?.y || 0) + 5}
-          textAnchor="middle"
-          fill="black"
-          fontSize="20"
-        >
-          {/*:(*/}
-        </text>
-      )}
-      <text
+      {/*<text
         x={layout[proc.pid]?.x || 0}
-        y={(layout[proc.pid]?.y || 0) + 40}
+        y={(layout[proc.pid]?.y || 0) + 2}
         textAnchor="middle"
         fill="black"
-        fontSize="12"
+        fontSize="8"
+        fontWeight="bold"
+      >
+        pid: {proc.pid}
+      </text>*/}
+
+      <text
+        x={layout[proc.pid]?.x || 0}
+        y={(layout[proc.pid]?.y || 0) + 20}
+        textAnchor="middle"
+        fill="black"
+        fontSize="10"
         fontWeight="bold"
       >
         pid: {proc.pid}
@@ -120,14 +110,19 @@ export const EventLogScroll = ({
 export const EventLog = ({
   simulation,
   currentStep,
+  height,
 }: {
   simulation: SimulationType;
   currentStep: number;
+  height: number;
 }) => {
   return (
     <div className="bg-neutral-300/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
       <h2 className="text-xl font-bold mb-4">Event Log</h2>
-      <div className="space-y-2 h-[500px] overflow-y-auto scroll-smooth">
+      <div
+        className="space-y-2 overflow-y-auto scroll-smooth"
+        style={{ height: height }}
+      >
         {simulation.steps.slice(0, currentStep + 1).map((step, idx) => (
           <div
             key={idx}

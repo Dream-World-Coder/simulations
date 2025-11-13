@@ -10,6 +10,8 @@ import {
   Home,
   Moon,
   Sun,
+  Expand,
+  Shrink,
 } from "lucide-react";
 
 import { Process, LoverProcess, HaterProcess } from "./os";
@@ -127,7 +129,10 @@ function runSimulation(
 }
 
 // tree layout
-function calculateTreeLayout(processes: Map<number, Process>) {
+function calculateTreeLayout(
+  processes: Map<number, Process>,
+  isExpanded: boolean,
+) {
   const layout: LayoutType = {};
   const levels: number[][] = [];
 
@@ -139,8 +144,8 @@ function calculateTreeLayout(processes: Map<number, Process>) {
   levels.forEach((pids, level) => {
     pids.forEach((pid, index) => {
       layout[pid] = {
-        x: (index + 1) * (800 / (pids.length + 1)),
-        y: level * 120 + 50,
+        x: (index + 1) * ((isExpanded ? 1200 : 800) / (pids.length + 1)),
+        y: level * 80 + 50,
       };
     });
   });
@@ -158,12 +163,13 @@ export default function Simulation({
   question: string;
   code: string;
 }) {
-  const [probability, setProbability] = useState<number>(0.37);
+  const [probability, setProbability] = useState<number>(0.17);
   const [maxGenerations, setMaxGenerations] = useState<number>(0);
   const [playSpeed, setPlaySpeed] = useState<number>(800);
   const [simulation, setSimulation] = useState<SimulationType | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const { theme, toggleTheme } = useTheme();
 
@@ -214,7 +220,7 @@ export default function Simulation({
   };
 
   const currentProcesses = simulation?.processes[currentStep] || new Map();
-  const layout = calculateTreeLayout(currentProcesses);
+  const layout = calculateTreeLayout(currentProcesses, isExpanded);
 
   return (
     <div className="min-h-screen p-8">
@@ -362,12 +368,26 @@ export default function Simulation({
         {simulation && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Tree Visualization */}
-            <div className="lg:col-span-2 bg-neutral-300/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-              <h2 className="text-xl font-bold  mb-4">Process Tree</h2>
-              <div className="relative bg-neutral-300/5 rounded-xl p-4">
+            <div
+              className={`${isExpanded ? "lg:col-span-3" : "lg:col-span-2"} bg-neutral-300/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20`}
+            >
+              <h2 className="text-xl font-bold mb-4 flex items-center justify-between">
+                Process Tree
+                <div
+                  className="fullscreen-btn cursor-pointer"
+                  onClick={() => {
+                    setIsExpanded(!isExpanded);
+                  }}
+                >
+                  {isExpanded ? <Shrink size={20} /> : <Expand size={20} />}
+                </div>
+              </h2>
+              <div
+                className={`${isExpanded ? "flex justify-center" : "relative"} bg-neutral-300/5 rounded-xl p-4`}
+              >
                 <svg
                   width="100%"
-                  height={Math.max(500, (simulation.maxGeneration + 1) * 120)}
+                  height={Math.max(500, (simulation.maxGeneration + 1) * 80)}
                 >
                   {/* connections */}
                   {Array.from(currentProcesses.values()).map((proc) => {
@@ -375,7 +395,7 @@ export default function Simulation({
                     const parent = currentProcesses.get(proc.ppid);
                     if (!parent) return null;
 
-                    // Check if love message is being sent on this connection
+                    // check if love message is being sent on this connection
                     const currentLog = simulation.steps[currentStep] || "";
                     const isLoveTransfer =
                       (currentLog.includes(`Process ${proc.pid}`) &&
@@ -389,11 +409,11 @@ export default function Simulation({
                       <line
                         key={`line-${proc.pid}`}
                         x1={layout[proc.ppid]?.x || 0}
-                        y1={(layout[proc.ppid]?.y || 0) + 20}
+                        y1={(layout[proc.ppid]?.y || 0) + 10}
                         x2={layout[proc.pid]?.x || 0}
-                        y2={(layout[proc.pid]?.y || 0) - 20}
+                        y2={(layout[proc.pid]?.y || 0) - 10}
                         stroke={isLoveTransfer ? "#22c55e" : "rgba(0,0,0,0.3)"}
-                        strokeWidth={isLoveTransfer ? "4" : "2"}
+                        strokeWidth={isLoveTransfer ? "3" : "1"}
                         className="transition-all duration-300"
                       />
                     );
@@ -418,7 +438,13 @@ export default function Simulation({
             </div>
 
             {/* Message Log */}
-            <EventLog simulation={simulation} currentStep={currentStep} />
+            {!isExpanded && (
+              <EventLog
+                simulation={simulation}
+                currentStep={currentStep}
+                height={Math.max(500, (simulation.maxGeneration + 1) * 80)}
+              />
+            )}
           </div>
         )}
 
