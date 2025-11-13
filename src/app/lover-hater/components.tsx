@@ -29,7 +29,7 @@ export function TreeNode({
           fill="black"
           fontSize="20"
         >
-          ❤
+          {/*❤*/}
         </text>
       ) : (
         <text
@@ -39,7 +39,7 @@ export function TreeNode({
           fill="black"
           fontSize="20"
         >
-          :(
+          {/*:(*/}
         </text>
       )}
       <text
