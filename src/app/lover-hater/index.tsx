@@ -397,6 +397,8 @@ export default function Simulation({
 
                     // check if love message is being sent on this connection
                     const currentLog = simulation.steps[currentStep] || "";
+
+                    /* bug: multiple lines are getting highlighted for big networks, i think only first digit of pid/ppid is getting checked for some reason */
                     const isLoveTransfer =
                       (currentLog.includes(`Process ${proc.pid}`) &&
                         currentLog.includes("sent love") &&
@@ -404,6 +406,12 @@ export default function Simulation({
                       (currentLog.includes(`Process ${proc.ppid}`) &&
                         currentLog.includes("sent love") &&
                         currentLog.includes(`child ${proc.pid}`));
+
+                    if (isLoveTransfer) {
+                      console.log(
+                        `love transfer, pid=${proc.pid} ppid=${proc.ppid},\n current log: ${currentLog}`,
+                      );
+                    }
 
                     return (
                       <line
